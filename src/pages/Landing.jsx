@@ -10,6 +10,7 @@ import {
 import Navbar from '../components/Navbar';
 import ThreeHeroCanvas from '../components/ThreeHeroCanvas';
 import './landing.css';
+import logoImg from '../assets/icon.png';
 
 /* ── Animated counter ─────────────────────────────────── */
 function Counter({ to, suffix = '', duration = 2 }) {
@@ -556,14 +557,18 @@ export default function Landing() {
       {/* ═══════════════════════ FOOTER ═══════════════════════ */}
       <footer style={{ borderTop: '1px solid var(--bg-glass-border)', padding: '40px 0' }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 8, background: 'var(--grad-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MapPin size={14} color="#fff" />
+          <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{
+              width: 30, height: 30, borderRadius: 10,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden'
+            }}>
+              <img src={logoImg} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'contain', marginRightRight: 0 }} />
             </div>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '0.95rem' }}>
+            <span style={{ marginLeft: 5,fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '0.8rem', color: 'var(--txt-primary)' }}>
               Clean<span style={{ color: 'var(--clr-primary)' }}>My</span>City
             </span>
-          </div>
+          </Link>
           <p style={{ color: 'var(--txt-muted)', fontSize: '0.8rem' }}>
             © {new Date().getFullYear()} CleanMyCity. Built to serve communities.
           </p>

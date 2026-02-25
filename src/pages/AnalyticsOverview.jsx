@@ -440,7 +440,7 @@ export default function AnalyticsOverview() {
           </div>
 
           {/* ── Summary badges (admin orgs pattern) ──────────────── */}
-          
+
 
           {/* ── Chart tab switcher (admin dashboard pattern) ──────── */}
           <div style={{
@@ -473,6 +473,24 @@ export default function AnalyticsOverview() {
           {/* ── Charts ────────────────────────────────────────────── */}
           {loading ? (
             <LoadingSkeleton />
+          ) : error ? (
+            <div style={{
+              textAlign: 'center', padding: '60px 0',
+              background: 'var(--bg-glass)', borderRadius: 16,
+              border: '1px solid var(--bg-glass-border)'
+            }}>
+              <AlertTriangle size={32} style={{ color: 'var(--clr-danger)', marginBottom: 12, opacity: 0.6 }} />
+              <p style={{ color: 'var(--txt-secondary)', fontSize: '0.9rem' }}>
+                We couldn't load the analytics data at this time.
+              </p>
+              <button
+                className="btn btn-outline btn-sm"
+                style={{ marginTop: 16 }}
+                onClick={() => setRange(r => r)}
+              >
+                Try again
+              </button>
+            </div>
           ) : (
             <AnimatePresence mode="wait">
               <motion.div

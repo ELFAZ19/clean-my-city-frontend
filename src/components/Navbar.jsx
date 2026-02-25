@@ -64,7 +64,7 @@ export default function Navbar() {
     >
       <div style={{ maxWidth: 1200, margin: '0 auto', height: 70, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center'}}>
           <div style={{
             width: 46, height: 46, borderRadius: 10,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
