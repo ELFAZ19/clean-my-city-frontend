@@ -312,6 +312,15 @@ input, textarea, select {
   appearance: none;
 }
 
+.field-select {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: var(--radius-full);
+  padding: 10px 16px;
+  color: var(--txt-primary);
+  font-size: var(--text-sm);
+}
+
 [data-theme="dark"] select option {
   background-color: #0d1629;
   color: #f0f4ff;
@@ -381,6 +390,58 @@ input, textarea, select {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-lg);
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.analytics-card {
+  background: var(--grad-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--bg-glass-border);
+  padding: 20px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+}
+
+.analytics-card--wide {
+  grid-column: 1 / -1;
+}
+
+.analytics-card-header h2 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--txt-primary);
+}
+
+.analytics-card-header span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--txt-secondary);
+  margin-top: 4px;
+}
+
+.analytics-chart {
+  margin-top: 12px;
+  flex: 1;
+  min-height: 200px;
+}
+
+@media (max-width: 980px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .analytics-grid {
+    gap: 16px;
+  }
 }
 
 /* ============================================================

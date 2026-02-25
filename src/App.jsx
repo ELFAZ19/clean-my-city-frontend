@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Credentials from './pages/Credentials';
+import AnalyticsOverview from './pages/AnalyticsOverview';
 import CitizenDashboard from './pages/citizen/Dashboard';
 import CreateIssue from './pages/citizen/CreateIssue';
 import CitizenProfile from './pages/citizen/Profile';
@@ -43,6 +44,14 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/credentials" element={<Credentials />} />
+      <Route
+        path="/analytics"
+        element={(
+          <ProtectedRoute allowedRoles={['ADMIN', 'AUTHORITY']}>
+            <AnalyticsOverview />
+          </ProtectedRoute>
+        )}
+      />
       <Route path="/dashboard" element={<ProtectedRoute><DashboardRedirect /></ProtectedRoute>} />
       <Route path="/dashboard/citizen" element={
         <ProtectedRoute allowedRoles={['CITIZEN']}><CitizenDashboard /></ProtectedRoute>
