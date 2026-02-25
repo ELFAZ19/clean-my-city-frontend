@@ -213,7 +213,7 @@ export default function Landing() {
                 Report an Issue <ArrowRight size={18} />
               </Link>
               <Link to="/credentials" className="btn btn-outline btn-lg" style={{ gap: 10 }}>
-                Explore Credentials
+                Explore with test users
               </Link>
               <a href="#how-it-works" className="btn btn-ghost btn-lg" style={{ gap: 10 }}>
                 <PlayCircle size={18} /> See How It Works
@@ -250,16 +250,16 @@ export default function Landing() {
       {/* ═══════════════════════ STATS ═══════════════════════ */}
       <section id="stats" style={{ padding: '60px 0', borderTop: '1px solid var(--bg-glass-border)', borderBottom: '1px solid var(--bg-glass-border)', background: 'var(--bg-surface)' }}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
-            <div>
+          <div className="landing-statsHeader" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32, gap: 24, flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 400px' }}>
               <span style={{ color: 'var(--clr-primary)', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                 Impact at a glance
               </span>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: 800, color: 'var(--txt-primary)', marginTop: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', fontWeight: 800, color: 'var(--txt-primary)', marginTop: 8, lineHeight: 1.2 }}>
                 Proven results from real cities
               </h2>
             </div>
-            <p style={{ maxWidth: 320, fontSize: '0.9rem', color: 'var(--txt-secondary)', marginTop: 4 }}>
+            <p style={{ flex: '1 1 300px', fontSize: '0.95rem', color: 'var(--txt-secondary)', lineHeight: 1.6 }}>
               These numbers update as organizations close issues and citizens keep reporting.
             </p>
           </div>

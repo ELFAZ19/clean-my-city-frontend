@@ -10,8 +10,8 @@ let L = null;
 
 function MapPicker({ lat, lng, onChange }) {
   const containerRef = useRef(null);
-  const mapRef       = useRef(null);
-  const markerRef    = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ function MapPicker({ lat, lng, onChange }) {
       delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
       const initLat = lat || 9.005401;
@@ -109,17 +109,43 @@ function MapPicker({ lat, lng, onChange }) {
   );
 }
 
+function DuplicateModal({ isOpen, onClose }) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 3000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }} />
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            style={{ position: 'relative', width: '100%', maxWidth: 420, background: 'var(--bg-surface)', border: '1px solid var(--bg-glass-border)', borderRadius: 28, padding: 40, textAlign: 'center', boxShadow: '0 20px 50px rgba(0,0,0,0.3)' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+              <AlertCircle size={28} style={{ color: '#f59e0b' }} />
+            </div>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--txt-primary)', marginBottom: 12 }}>Similar Issue Detected</h2>
+            <p style={{ color: 'var(--txt-secondary)', lineHeight: 1.6, marginBottom: 32 }}>
+              A similar issue has already been reported in this location. To prevent duplicates, we've flagged your report. You can track existing issues from your dashboard.
+            </p>
+            <button className="btn btn-primary" onClick={onClose} style={{ width: '100%', height: 48 }}>
+              Got it, thanks
+            </button>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function CreateIssue() {
   const navigate = useNavigate();
-  const [orgs, setOrgs]       = useState([]);
-  const [form, setForm]       = useState({ title: '', description: '', organization_id: '', latitude: '', longitude: '' });
-  const [image, setImage]     = useState(null);
+  const [orgs, setOrgs] = useState([]);
+  const [form, setForm] = useState({ title: '', description: '', organization_id: '', latitude: '', longitude: '' });
+  const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
-  const [submitting, setSub]  = useState(false);
-  const [error, setError]     = useState('');
+  const [submitting, setSub] = useState(false);
+  const [error, setError] = useState('');
   const [success, setSuccess] = useState(''); // Kept for safety, but using modal now
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
-  const [gpsLoading, setGPS]  = useState(false);
+  const [gpsLoading, setGPS] = useState(false);
   const [showMap, setShowMap] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -128,7 +154,7 @@ export default function CreateIssue() {
     api.get('/organizations/public').then(({ data }) => {
       const raw = data?.data?.organizations ?? data?.organizations ?? data?.data ?? data;
       setOrgs(Array.isArray(raw) ? raw : []);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   const handleImageChange = (e) => {
@@ -170,12 +196,12 @@ export default function CreateIssue() {
       formData.append('title', form.title);
       formData.append('description', form.description);
       formData.append('organization_id', form.organization_id);
-      if (form.latitude)  formData.append('latitude', form.latitude);
+      if (form.latitude) formData.append('latitude', form.latitude);
       if (form.longitude) formData.append('longitude', form.longitude);
       if (image) formData.append('image', image);
 
       const { data } = await api.post('/issues', formData);
-      
+
       if (data.isDuplicate) {
         setShowDuplicateModal(true);
       } else {

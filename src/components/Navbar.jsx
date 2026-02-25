@@ -99,21 +99,34 @@ export default function Navbar() {
               <Link to="/credentials" style={{ color: 'var(--txt-secondary)', fontSize: '0.875rem', fontWeight: 500, transition: 'color 0.2s' }}
                 onMouseEnter={e => e.target.style.color = 'var(--clr-primary)'}
                 onMouseLeave={e => e.target.style.color = 'var(--txt-secondary)'}>
-                Credentials
+                Test user
               </Link>
               <a
                 href="https://yeabsira-dejene19.web.app/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: 'rgba(47, 252, 70, 0.99)',
+                  color: 'var(--txt-secondary)',
+                  backgroundColor: '#557edf3f',
+                  backdropFilter: 'blur(30px)',
+                  borderRadius: 20,
+                  padding: '8px 16px',
                   fontSize: '0.875rem',
                   fontWeight: 500,
-                  transition: 'color 0.2s',
-                  textDecoration: 'none'
+                  transition: 'all 0.3s ease',
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = 'rgba(139, 158, 121, 0.99)'}
-                onMouseLeave={e => e.currentTarget.style.color = 'rgba(47, 252, 70, 0.99)'}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = 'var(--clr-primary)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = 'var(--txt-secondary)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
                 Developer
               </a>
