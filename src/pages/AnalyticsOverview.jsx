@@ -173,9 +173,8 @@ export default function AnalyticsOverview() {
         const endpoint = isAdmin ? '/issues/analytics/global' : '/issues/analytics/organization';
         const { data } = await api.get(endpoint, { params: { range: days } });
 
-        // Backend returns: { success: true, data: { timeseries: [...], resolutionByCategory: [...], slaBuckets: [...], backlogScatter: [...] } }
-        // For organization: { success: true, data: { organization_id: 123, timeseries: [...], ... } }
         const payload = data?.data || {};
+        console.log('Analytics payload received:', payload);
 
         setSeries({
           timeseries: Array.isArray(payload.timeseries) ? payload.timeseries : [],
@@ -260,12 +259,7 @@ export default function AnalyticsOverview() {
 
   /* ── Chart tab labels ─────────────────────────────────────── */
   // Resolution, SLA, and Backlog are Admin only
-  const TABS = isAdmin ? [
-    { id: 'overview', label: 'Issue Trends', icon: TrendingUp },
-    { id: 'resolution', label: 'Resolution', icon: BarChart2 },
-    { id: 'sla', label: 'SLA Compliance', icon: Shield },
-    { id: 'backlog', label: 'Backlog Health', icon: Layers },
-  ] : [
+  const TABS = [
     { id: 'overview', label: 'Issue Trends', icon: TrendingUp },
   ];
 
@@ -510,7 +504,7 @@ export default function AnalyticsOverview() {
                       accentColor="#22d3a0"
                       wide
                     >
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height={320}>
                         <LineChart data={series.timeseries} margin={{ top: 10, left: -10, right: 16 }}>
                           <defs>
                             <linearGradient id="lineGradTotal" x1="0" y1="0" x2="0" y2="1">
@@ -535,7 +529,7 @@ export default function AnalyticsOverview() {
                       icon={Shield}
                       accentColor="#6366f1"
                     >
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height={320}>
                         <PieChart>
                           <Pie
                             data={series.slaBuckets}
@@ -559,7 +553,7 @@ export default function AnalyticsOverview() {
                       icon={Layers}
                       accentColor="#f59e0b"
                     >
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height={320}>
                         <ScatterChart margin={{ top: 10, left: -20, right: 0 }}>
                           <CartesianGrid stroke="rgba(148,163,184,0.12)" />
                           <XAxis type="number" dataKey="x" name="Age (days)" stroke="var(--txt-muted)" tick={{ fontSize: 11 }} />
@@ -581,7 +575,7 @@ export default function AnalyticsOverview() {
                     accentColor="#22d3a0"
                     wide
                   >
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={400}>
                       <BarChart data={series.resolutionByCategory} margin={{ top: 10, left: -20, right: 0 }}>
                         <defs>
                           <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
@@ -610,7 +604,7 @@ export default function AnalyticsOverview() {
                     accentColor="#6366f1"
                     wide
                   >
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={400}>
                       <PieChart>
                         <Pie
                           data={series.slaBuckets}
@@ -640,7 +634,7 @@ export default function AnalyticsOverview() {
                     accentColor="#f59e0b"
                     wide
                   >
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={400}>
                       <ScatterChart margin={{ top: 10, left: -10, right: 24 }}>
                         <CartesianGrid stroke="rgba(148,163,184,0.12)" />
                         <XAxis type="number" dataKey="x" name="Age (days)" stroke="var(--txt-muted)" tick={{ fontSize: 11 }} label={{ value: 'Age (days)', position: 'insideBottom', offset: -5, fill: 'var(--txt-muted)', fontSize: 11 }} />
