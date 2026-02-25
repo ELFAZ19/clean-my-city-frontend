@@ -66,7 +66,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{
-            width: 56, height: 56, borderRadius: 10,
+            width: 46, height: 46, borderRadius: 10,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             overflow: 'hidden'
           }}>

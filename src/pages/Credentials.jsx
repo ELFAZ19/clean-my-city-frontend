@@ -171,7 +171,7 @@ export default function Credentials() {
               }}
             >
               <AlertTriangle size={16} />
-              <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Important: Please do not change the passwords for these shared accounts.</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Important: Please do not change the passwordor personal details for these shared accounts.</span>
             </motion.div>
           </motion.div>
 

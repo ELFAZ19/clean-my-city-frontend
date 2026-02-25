@@ -8,13 +8,13 @@ import IssueCard from '../../components/IssueCard';
 
 export default function OrgDashboard() {
   const { user } = useAuth();
-  const [issues, setIssues]     = useState([]);
-  const [orgId, setOrgId]       = useState(null);
-  const [loading, setLoading]   = useState(true);
+  const [issues, setIssues] = useState([]);
+  const [orgId, setOrgId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
-  const [filter, setFilter]     = useState('ALL');
+  const [filter, setFilter] = useState('ALL');
   const [exportOpen, setExportOpen] = useState(false);
-  const [exporting, setExporting]   = useState(false);
+  const [exporting, setExporting] = useState(false);
   const exportRef = useRef(null);
 
   const fetchQueue = async () => {
@@ -62,13 +62,15 @@ export default function OrgDashboard() {
   };
 
   const FILTER_OPTIONS = ['ALL', 'PENDING', 'IN_PROGRESS', 'RESOLVED'];
-  const filtered = filter === 'ALL' ? issues : issues.filter(i => i.status === filter);
+  const filtered = filter === 'ALL'
+    ? issues
+    : issues.filter(i => i.status?.toUpperCase() === filter);
 
   const stats = {
-    total:      issues.length,
-    pending:    issues.filter(i => i.status === 'PENDING').length,
-    inProgress: issues.filter(i => i.status === 'IN_PROGRESS').length,
-    resolved:   issues.filter(i => i.status === 'RESOLVED').length,
+    total: issues.length,
+    pending: issues.filter(i => i.status?.toUpperCase() === 'PENDING').length,
+    inProgress: issues.filter(i => i.status?.toUpperCase() === 'IN_PROGRESS').length,
+    resolved: issues.filter(i => i.status?.toUpperCase() === 'RESOLVED').length,
   };
 
   return (
@@ -97,7 +99,7 @@ export default function OrgDashboard() {
               </button>
               {exportOpen && (
                 <div style={{ position: 'absolute', right: 0, top: '110%', background: 'var(--bg-surface)', border: '1px solid var(--bg-glass-border)', borderRadius: 12, minWidth: 160, zIndex: 200, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.3)' }}>
-                  {[['csv','CSV (.csv)'],['xlsx','Excel (.xlsx)']].map(([fmt, label]) => (
+                  {[['csv', 'CSV (.csv)'], ['xlsx', 'Excel (.xlsx)']].map(([fmt, label]) => (
                     <button key={fmt} onClick={() => handleExport(fmt)}
                       style={{ display: 'block', width: '100%', textAlign: 'left', padding: '12px 16px', background: 'none', border: 'none', color: 'var(--txt-primary)', cursor: 'pointer', fontSize: '0.85rem', transition: 'background 0.15s' }}
                       onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-glass)'}
@@ -154,17 +156,17 @@ export default function OrgDashboard() {
             Loading queue…
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 80, color: 'var(--txt-muted)' }}>
+          <div key={`empty-${filter}`} style={{ textAlign: 'center', padding: 80, color: 'var(--txt-muted)' }}>
             <CheckCircle size={48} style={{ display: 'block', margin: '0 auto 16px', opacity: 0.3 }} />
-            No issues in this queue.
+            No {filter === 'ALL' ? '' : filter.replace('_', ' ').toLowerCase() + ' '}issues in this queue.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div key={filter} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {filtered.map(issue => (
               <motion.div key={issue.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <IssueCard issue={issue} actions={
                   <>
-                    {issue.status === 'PENDING' && (
+                    {issue.status?.toUpperCase() === 'PENDING' && (
                       <button onClick={() => updateStatus(issue.id, 'IN_PROGRESS')}
                         disabled={updating === issue.id}
                         className="btn btn-ghost btn-sm"
@@ -172,7 +174,7 @@ export default function OrgDashboard() {
                         {updating === issue.id ? '…' : 'Start'}
                       </button>
                     )}
-                    {issue.status === 'IN_PROGRESS' && (
+                    {issue.status?.toUpperCase() === 'IN_PROGRESS' && (
                       <button onClick={() => updateStatus(issue.id, 'RESOLVED')}
                         disabled={updating === issue.id}
                         className="btn btn-ghost btn-sm"
@@ -180,7 +182,7 @@ export default function OrgDashboard() {
                         {updating === issue.id ? '…' : '✓ Mark Resolved'}
                       </button>
                     )}
-                    {issue.status === 'RESOLVED' && (
+                    {issue.status?.toUpperCase() === 'RESOLVED' && (
                       <span style={{ fontSize: '0.78rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
                         <CheckCircle size={12} /> Resolved
                       </span>

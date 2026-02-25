@@ -12,10 +12,10 @@ const FILTER_OPTIONS = ['ALL', 'PENDING', 'IN_PROGRESS', 'RESOLVED'];
 export default function CitizenDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [issues, setIssues]   = useState([]);
-  const [filter, setFilter]   = useState('ALL');
+  const [issues, setIssues] = useState([]);
+  const [filter, setFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState('');
+  const [error, setError] = useState('');
 
   const fetchIssues = async () => {
     setLoading(true); setError('');
@@ -32,20 +32,22 @@ export default function CitizenDashboard() {
 
   useEffect(() => { fetchIssues(); }, []);
 
-  const filtered = filter === 'ALL' ? issues : issues.filter(i => i.status === filter);
+  const filtered = filter === 'ALL'
+    ? issues
+    : issues.filter(i => i.status?.toUpperCase() === filter);
 
   const stats = {
-    total:      issues.length,
-    pending:    issues.filter(i => i.status === 'PENDING').length,
-    inProgress: issues.filter(i => i.status === 'IN_PROGRESS').length,
-    resolved:   issues.filter(i => i.status === 'RESOLVED').length,
+    total: issues.length,
+    pending: issues.filter(i => i.status?.toUpperCase() === 'PENDING').length,
+    inProgress: issues.filter(i => i.status?.toUpperCase() === 'IN_PROGRESS').length,
+    resolved: issues.filter(i => i.status?.toUpperCase() === 'RESOLVED').length,
   };
 
   const STAT_CARDS = [
-    { label: 'Total',       value: stats.total,      icon: MapPin,         color: '#22d3a0' },
-    { label: 'Pending',     value: stats.pending,    icon: Clock,          color: '#f59e0b' },
-    { label: 'In Progress', value: stats.inProgress, icon: AlertTriangle,  color: '#6366f1' },
-    { label: 'Resolved',    value: stats.resolved,   icon: CheckCircle,    color: '#10b981' },
+    { label: 'Total', value: stats.total, icon: MapPin, color: '#22d3a0' },
+    { label: 'Pending', value: stats.pending, icon: Clock, color: '#f59e0b' },
+    { label: 'In Progress', value: stats.inProgress, icon: AlertTriangle, color: '#6366f1' },
+    { label: 'Resolved', value: stats.resolved, icon: CheckCircle, color: '#10b981' },
   ];
 
   return (
@@ -128,11 +130,11 @@ export default function CitizenDashboard() {
         ) : error ? (
           <div style={{ textAlign: 'center', padding: 60, color: 'var(--clr-danger)' }}>{error}</div>
         ) : filtered.length === 0 ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          <motion.div key={`empty-${filter}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             style={{ textAlign: 'center', padding: '80px 24px' }}>
             <MapPin size={48} style={{ color: 'var(--txt-muted)', margin: '0 auto 16px', display: 'block' }} />
             <p style={{ color: 'var(--txt-secondary)', fontSize: '1.05rem', marginBottom: 20 }}>
-              {filter === 'ALL' ? "You haven't reported any issues yet." : `No ${filter.toLowerCase()} issues.`}
+              {filter === 'ALL' ? "You haven't reported any issues yet." : `No ${filter.replace('_', ' ').toLowerCase()} issues.`}
             </p>
             {filter === 'ALL' && (
               <Link to="/dashboard/citizen/create" className="btn btn-primary">
@@ -142,8 +144,9 @@ export default function CitizenDashboard() {
           </motion.div>
         ) : (
           <motion.div
+            key={filter}
             initial="hidden" animate="show"
-            variants={{ show: { transition: { staggerChildren: 0.07 } } }}
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.07 } } }}
             style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
           >
             {filtered.map((issue) => (
