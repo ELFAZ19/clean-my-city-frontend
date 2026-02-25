@@ -63,7 +63,7 @@ const PARTICLE_ANIMS = [
 const FEATURES = [
   { icon: MapPin, color: '#22d3a0', title: 'GPS-Pinned Reports', desc: 'Attach exact coordinates to every issue so organizations find it immediately.', },
   { icon: Zap, color: '#6366f1', title: 'Smart Duplicate Detection', desc: 'AI-powered matching prevents flooding with duplicates—keeps queues clean.', },
-  { icon: Shield, color: '#f59e0b', title: 'Enterprise-Grade Security', desc: 'JWT + session auth, bcrypt hashing, helmet headers, and rate limiting built-in.', },
+  { icon: Shield, color: '#f59e0b', title: 'Government-Grade Security', desc: 'CSRF protection, bcrypt-12 hashing, CSP headers, HSTS, XSS sanitization, and zero info leakage.', },
   { icon: Clock, color: '#22d3a0', title: 'Real-Time Status Tracking', desc: 'Watch your issue move from PENDING → IN PROGRESS → RESOLVED in real time.', },
   { icon: BarChart3, color: '#6366f1', title: 'Analytics Dashboard', desc: 'Admins and organizations get live metrics on resolution times and issue volume.', },
   { icon: Users, color: '#f59e0b', title: 'Role-Based Access Control', desc: 'Citizens, Organizations, and Admins each get a tailored, secure workspace.', },
@@ -449,6 +449,76 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════════════════ SECURITY & TRUST ═══════════════════════ */}
+      <section style={{ padding: '100px 0', background: 'var(--bg-surface)', position: 'relative', overflow: 'hidden' }}>
+        <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }} style={{ textAlign: 'center', marginBottom: 48 }}>
+            <span style={{ color: '#f59e0b', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+              Security & Trust
+            </span>
+            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.75rem, 4vw, 2.75rem)', fontWeight: 800, color: 'var(--txt-primary)', marginTop: 12, lineHeight: 1.2 }}>
+              Government-grade protection,{' '}
+              <span className="text-gradient">built in</span>
+            </h2>
+            <p style={{ color: 'var(--txt-secondary)', marginTop: 14, maxWidth: 520, margin: '14px auto 0', fontSize: '0.95rem', lineHeight: 1.7 }}>
+              Your data is shielded with enterprise-grade encryption and defense-in-depth architecture.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Marquee — scrolls RIGHT */}
+        <div className="landing-securityMarquee">
+          <div className="landing-securityTrack">
+            {[...Array(2)].flatMap((_, setIdx) => [
+              { icon: Shield, color: '#22d3a0', title: 'End-to-End Encryption', desc: 'TLS/HTTPS in transit · bcrypt-12 at rest' },
+              { icon: AlertTriangle, color: '#f59e0b', title: 'CSRF Protection', desc: 'Cryptographic tokens on every request' },
+              { icon: Shield, color: '#6366f1', title: 'Strict CSP & HSTS', desc: 'Content Security Policy · HSTS preload' },
+              { icon: Users, color: '#22d3a0', title: 'Role-Based Access', desc: 'Server-enforced Citizen · Authority · Admin' },
+              { icon: Clock, color: '#6366f1', title: 'Rate Limiting', desc: 'Per-IP throttling · capped payload sizes' },
+              { icon: Zap, color: '#f59e0b', title: 'Zero Info Leakage', desc: 'No stack traces · no internals exposed' },
+            ].map((item, idx) => (
+              <div key={`${setIdx}-${idx}`} className="landing-securityCard">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10,
+                    background: `${item.color}15`, border: `1px solid ${item.color}25`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}>
+                    <item.icon size={17} style={{ color: item.color }} />
+                  </div>
+                  <h3 style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--txt-primary)', margin: 0 }}>{item.title}</h3>
+                </div>
+                <p style={{ color: 'var(--txt-muted)', fontSize: '0.82rem', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+              </div>
+            )))}
+          </div>
+        </div>
+
+        {/* Compliance badges */}
+        <div className="container">
+          <motion.div
+            variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true }}
+            style={{ marginTop: 40, display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}
+          >
+            {[
+              { label: 'OWASP Top 10', color: '#22d3a0' },
+              { label: 'NIST Framework', color: '#6366f1' },
+              { label: 'ISO 27001', color: '#f59e0b' },
+            ].map((b) => (
+              <div key={b.label} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                background: `${b.color}10`, border: `1px solid ${b.color}30`,
+                borderRadius: 'var(--radius-full)', padding: '7px 18px',
+              }}>
+                <Shield size={14} style={{ color: b.color }} />
+                <span style={{ fontSize: '0.78rem', fontWeight: 600, color: b.color }}>{b.label}</span>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
 
       {/* ═══════════════════════ CTA ═══════════════════════ */}
       <section style={{ padding: '100px 0' }}>

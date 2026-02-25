@@ -1,15 +1,20 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import api from '../api/axiosInstance';
+import api, { fetchCsrfToken } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser]   = useState(() => {
+  const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('cmc_user')); }
     catch { return null; }
   });
   const [token, setToken] = useState(() => localStorage.getItem('cmc_token') || null);
   const [loading, setLoading] = useState(false);
+
+  // Initialize CSRF token on mount
+  useEffect(() => {
+    fetchCsrfToken();
+  }, []);
 
   // Listen for 401 events from axiosInstance
   useEffect(() => {
@@ -27,6 +32,8 @@ export function AuthProvider({ children }) {
       localStorage.setItem('cmc_user', JSON.stringify(u));
       setToken(t);
       setUser(u);
+      // Re-fetch CSRF token after login (session changed)
+      await fetchCsrfToken();
       return { success: true, user: u };
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
@@ -50,7 +57,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(async () => {
-    try { await api.post('/auth/logout'); } catch {}
+    try { await api.post('/auth/logout'); } catch { }
     localStorage.removeItem('cmc_token');
     localStorage.removeItem('cmc_user');
     setToken(null);
