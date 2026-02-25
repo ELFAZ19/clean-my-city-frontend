@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ChevronDown, LogOut, User, LayoutDashboard, Sun, Moon, Menu, X as CloseIcon } from 'lucide-react';
+import { MapPin, ChevronDown, LogOut, User, LayoutDashboard, Sun, Moon, Menu, X as CloseIcon, BarChart2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import logoImg from '../assets/icon.png';
@@ -232,6 +232,14 @@ export default function Navbar() {
                         <User size={15} /> Org Profile
                       </Link>
                     )}
+                    {(user?.role === 'ADMIN' || user?.role === 'AUTHORITY') && (
+                      <Link to="/analytics" onClick={() => setDropOpen(false)}
+                        style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', color: 'var(--txt-secondary)', fontSize: '0.875rem', transition: 'all 0.15s' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-glass)'; e.currentTarget.style.color = 'var(--txt-primary)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--txt-secondary)'; }}>
+                        <BarChart2 size={15} /> Analytics
+                      </Link>
+                    )}
                     <div style={{ height: 1, background: 'var(--bg-glass-border)' }} />
                     <button onClick={handleLogout}
                       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', color: 'var(--clr-danger)', fontSize: '0.875rem', transition: 'all 0.15s', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
@@ -304,6 +312,11 @@ export default function Navbar() {
                 <Link to={dashboardPath} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>
                   <LayoutDashboard size={18} /> Dashboard
                 </Link>
+                {(user?.role === 'ADMIN' || user?.role === 'AUTHORITY') && (
+                  <Link to="/analytics" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>
+                    <BarChart2 size={18} /> Analytics
+                  </Link>
+                )}
                 <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--clr-danger)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.1)', cursor: 'pointer' }}>
                   <LogOut size={18} /> Sign Out
                 </button>

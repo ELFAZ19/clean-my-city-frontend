@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { RefreshCw, CheckCircle, Clock, AlertTriangle, Building2, Download, ChevronDown } from 'lucide-react';
+import { RefreshCw, CheckCircle, Clock, AlertTriangle, Building2, Download, ChevronDown, BarChart2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Link } from 'react-router-dom';
 import api from '../../api/axiosInstance';
 import Navbar from '../../components/Navbar';
 import IssueCard from '../../components/IssueCard';
@@ -90,6 +91,7 @@ export default function OrgDashboard() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Link to="/analytics" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none', borderColor: 'rgba(34,211,160,0.3)', color: 'var(--clr-primary)' }}><BarChart2 size={15} /> Analytics</Link>
             <button className="btn btn-ghost btn-sm" onClick={fetchQueue}><RefreshCw size={15} /></button>
             {/* Export dropdown */}
             <div ref={exportRef} style={{ position: 'relative' }}>

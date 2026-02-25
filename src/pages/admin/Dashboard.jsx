@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Plus, RefreshCw, X, CheckCircle, XCircle, AlertCircle, Users, Trash2, LayoutGrid, FileText } from 'lucide-react';
+import { Building2, Plus, RefreshCw, X, CheckCircle, XCircle, AlertCircle, Users, Trash2, LayoutGrid, FileText, BarChart2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../api/axiosInstance';
@@ -35,13 +35,13 @@ function ConfirmDeleteModal({ org, onConfirm, onCancel }) {
 function OrgModal({ org, onClose, onSave }) {
   const [form, setForm] = useState(org ? { ...org } : { name: '', email: '', phone: '', category: '' });
   const [saving, setSaving] = useState(false);
-  const [error, setError]   = useState('');
+  const [error, setError] = useState('');
 
   const handleSave = async (e) => {
     e.preventDefault(); setError(''); setSaving(true);
     try {
       if (org) { await api.put(`/organizations/${org.id}`, form); }
-      else      { await api.post('/organizations', form); }
+      else { await api.post('/organizations', form); }
       onSave();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to save organization.');
@@ -63,10 +63,10 @@ function OrgModal({ org, onClose, onSave }) {
         {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '10px 14px', color: 'var(--clr-danger)', fontSize: '0.85rem', marginBottom: 16 }}>{error}</div>}
         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[
-            { id: 'org-name',     key: 'name',     label: 'Organization Name', type: 'text'  },
-            { id: 'org-email',    key: 'email',     label: 'Email',            type: 'email' },
-            { id: 'org-phone',    key: 'phone',     label: 'Phone',            type: 'tel'   },
-            { id: 'org-category', key: 'category',  label: 'Category',         type: 'text'  },
+            { id: 'org-name', key: 'name', label: 'Organization Name', type: 'text' },
+            { id: 'org-email', key: 'email', label: 'Email', type: 'email' },
+            { id: 'org-phone', key: 'phone', label: 'Phone', type: 'tel' },
+            { id: 'org-category', key: 'category', label: 'Category', type: 'text' },
           ].map(f => (
             <div key={f.key} className="field">
               <label>{f.label}</label>
@@ -88,10 +88,10 @@ function OrgModal({ org, onClose, onSave }) {
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('orgs'); // 'orgs' | 'reports'
-  const [orgs, setOrgs]         = useState([]);
+  const [orgs, setOrgs] = useState([]);
   const [allIssues, setAllIssues] = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [modal, setModal]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -152,6 +152,7 @@ export default function AdminDashboard() {
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <Link to="/dashboard/admin/users" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none' }}><Users size={15} /> Users</Link>
+            <Link to="/analytics" className="btn btn-ghost btn-sm" style={{ textDecoration: 'none', borderColor: 'rgba(34,211,160,0.3)', color: 'var(--clr-primary)' }}><BarChart2 size={15} /> Analytics</Link>
             <button className="btn btn-ghost btn-sm" onClick={() => activeTab === 'orgs' ? fetchOrgs() : fetchIssues()}><RefreshCw size={15} /></button>
             {activeTab === 'orgs' && (
               <button className="btn btn-primary btn-sm" onClick={() => setModal('new')}>
@@ -192,8 +193,8 @@ export default function AdminDashboard() {
             {/* Summary badges for orgs */}
             <div style={{ display: 'flex', gap: 12, marginBottom: 28, flexWrap: 'wrap' }}>
               {[
-                { label: `${orgs.length} Total`,                color: '#22d3a0' },
-                { label: `${orgs.filter(o => o.is_active).length} Active`,  color: '#10b981' },
+                { label: `${orgs.length} Total`, color: '#22d3a0' },
+                { label: `${orgs.filter(o => o.is_active).length} Active`, color: '#10b981' },
                 { label: `${orgs.filter(o => !o.is_active).length} Inactive`, color: '#f59e0b' },
               ].map(b => (
                 <span key={b.label} style={{ padding: '6px 16px', borderRadius: 'var(--radius-full)', fontSize: '0.8rem', fontWeight: 600, background: `${b.color}15`, border: `1px solid ${b.color}30`, color: b.color }}>
@@ -203,9 +204,9 @@ export default function AdminDashboard() {
             </div>
 
             {orgs.length === 0 ? (
-               <div style={{ textAlign: 'center', padding: 80, color: 'var(--txt-muted)' }}>
-                 <Building2 size={48} style={{ display: 'block', margin: '0 auto 16px', opacity: 0.3 }} />No organizations yet.
-               </div>
+              <div style={{ textAlign: 'center', padding: 80, color: 'var(--txt-muted)' }}>
+                <Building2 size={48} style={{ display: 'block', margin: '0 auto 16px', opacity: 0.3 }} />No organizations yet.
+              </div>
             ) : (
               <motion.div initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.05 } } }}
                 style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
@@ -254,7 +255,7 @@ export default function AdminDashboard() {
             ) : (
               allIssues.map(issue => (
                 <motion.div key={issue.id} variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}>
-                   <IssueCard issue={issue} />
+                  <IssueCard issue={issue} />
                 </motion.div>
               ))
             )}
