@@ -36,9 +36,9 @@ export default function Navbar() {
 
   // AUTHORITY is the backend role name for organization accounts
   const dashboardPath =
-    user?.role === 'CITIZEN'    ? '/dashboard/citizen' :
-    user?.role === 'AUTHORITY'  ? '/dashboard/organization' :
-    user?.role === 'ADMIN'      ? '/dashboard/admin' : '/dashboard';
+    user?.role === 'CITIZEN' ? '/dashboard/citizen' :
+      user?.role === 'AUTHORITY' ? '/dashboard/organization' :
+        user?.role === 'ADMIN' ? '/dashboard/admin' : '/dashboard';
 
   const isLanding = location.pathname === '/';
 
@@ -101,6 +101,22 @@ export default function Navbar() {
                 onMouseLeave={e => e.target.style.color = 'var(--txt-secondary)'}>
                 Credentials
               </Link>
+              <a
+                href="https://yeabsira-dejene19.web.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  color: 'rgba(47, 252, 70, 0.99)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  transition: 'color 0.2s',
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={e => e.currentTarget.style.color = 'rgba(139, 158, 121, 0.99)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(47, 252, 70, 0.99)'}
+              >
+                Developer
+              </a>
             </>
           )}
         </div>
@@ -259,6 +275,8 @@ export default function Navbar() {
                 <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>How it Works</a>
                 <a href="#stats" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>Impact</a>
                 <Link to="/credentials" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(34,211,160,0.08)', border: '1px solid rgba(34,211,160,0.2)' }}>Platform Credentials</Link>
+                <Link to="https://yeabsira-dejene19.web.app/" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(55, 34, 211, 0.08)', border: '1px solid rgba(34, 125, 211, 0.2)' }}>Developer</Link>
+
               </>
             )}
 
@@ -278,7 +296,7 @@ export default function Navbar() {
                 </button>
               </>
             )}
-            
+
             <div style={{ marginTop: 'auto', textAlign: 'center' }}>
               <div style={{ fontSize: '0.75rem', color: 'var(--txt-muted)' }}>© 2024 CleanMyCity</div>
             </div>

@@ -61,47 +61,47 @@ const PARTICLE_ANIMS = [
 ];
 
 const FEATURES = [
-  { icon: MapPin,    color: '#22d3a0', title: 'GPS-Pinned Reports',       desc: 'Attach exact coordinates to every issue so organizations find it immediately.', },
-  { icon: Zap,       color: '#6366f1', title: 'Smart Duplicate Detection', desc: 'AI-powered matching prevents flooding with duplicates—keeps queues clean.',    },
-  { icon: Shield,    color: '#f59e0b', title: 'Enterprise-Grade Security', desc: 'JWT + session auth, bcrypt hashing, helmet headers, and rate limiting built-in.', },
-  { icon: Clock,     color: '#22d3a0', title: 'Real-Time Status Tracking', desc: 'Watch your issue move from PENDING → IN PROGRESS → RESOLVED in real time.',    },
-  { icon: BarChart3, color: '#6366f1', title: 'Analytics Dashboard',       desc: 'Admins and organizations get live metrics on resolution times and issue volume.', },
-  { icon: Users,     color: '#f59e0b', title: 'Role-Based Access Control', desc: 'Citizens, Organizations, and Admins each get a tailored, secure workspace.',     },
+  { icon: MapPin, color: '#22d3a0', title: 'GPS-Pinned Reports', desc: 'Attach exact coordinates to every issue so organizations find it immediately.', },
+  { icon: Zap, color: '#6366f1', title: 'Smart Duplicate Detection', desc: 'AI-powered matching prevents flooding with duplicates—keeps queues clean.', },
+  { icon: Shield, color: '#f59e0b', title: 'Enterprise-Grade Security', desc: 'JWT + session auth, bcrypt hashing, helmet headers, and rate limiting built-in.', },
+  { icon: Clock, color: '#22d3a0', title: 'Real-Time Status Tracking', desc: 'Watch your issue move from PENDING → IN PROGRESS → RESOLVED in real time.', },
+  { icon: BarChart3, color: '#6366f1', title: 'Analytics Dashboard', desc: 'Admins and organizations get live metrics on resolution times and issue volume.', },
+  { icon: Users, color: '#f59e0b', title: 'Role-Based Access Control', desc: 'Citizens, Organizations, and Admins each get a tailored, secure workspace.', },
 ];
 
 const STEPS = [
-  { num: '01', icon: MapPin,        title: 'Report an Issue',     desc: 'Take a photo, add a description, and pin the GPS location. Done in 30 seconds.' },
+  { num: '01', icon: MapPin, title: 'Report an Issue', desc: 'Take a photo, add a description, and pin the GPS location. Done in 30 seconds.' },
   { num: '02', icon: Building2Icon, title: 'Routed to the Right Org', desc: 'The system routes your report to the responsible organization automatically.' },
-  { num: '03', icon: CheckCircle,   title: 'Track & Get Notified', desc: 'Follow the status live until your issue is marked Resolved.' },
+  { num: '03', icon: CheckCircle, title: 'Track & Get Notified', desc: 'Follow the status live until your issue is marked Resolved.' },
 ];
-function Building2Icon(p) { return <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="10"/><path d="M3 21h18"/></svg>; }
+function Building2Icon(p) { return <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="7" height="18" /><rect x="14" y="3" width="7" height="10" /><path d="M3 21h18" /></svg>; }
 
 const CATEGORIES = [
-  { icon: Droplets,     label: 'Water & Sewage' },
-  { icon: Zap,          label: 'Electricity'    },
-  { icon: Construction, label: 'Roads & Paths'  },
-  { icon: Wifi,         label: 'Public Services'},
-  { icon: TreePine,     label: 'Parks & Green'  },
-  { icon: Trash2,       label: 'Waste & Litter' },
+  { icon: Droplets, label: 'Water & Sewage' },
+  { icon: Zap, label: 'Electricity' },
+  { icon: Construction, label: 'Roads & Paths' },
+  { icon: Wifi, label: 'Public Services' },
+  { icon: TreePine, label: 'Parks & Green' },
+  { icon: Trash2, label: 'Waste & Litter' },
 ];
 
 const STATS = [
   { value: 12400, suffix: '+', label: 'Issues Resolved' },
-  { value: 98,    suffix: '%', label: 'Satisfaction Rate' },
-  { value: 340,   suffix: '+', label: 'Organizations'    },
-  { value: 4.8,   suffix: 'h', label: 'Avg. Response Time' },
+  { value: 98, suffix: '%', label: 'Satisfaction Rate' },
+  { value: 340, suffix: '+', label: 'Organizations' },
+  { value: 4.8, suffix: 'h', label: 'Avg. Response Time' },
 ];
 
 const TESTIMONIALS = [
   { name: 'Abebe Girma', role: 'Addis Ababa Resident', text: 'A pothole I reported was fixed within 3 days. I never expected that kind of speed from local government.' },
-  { name: 'Sara Tadesse', role: 'Municipal Officer',   text: 'The queue system is a game changer. We can prioritize properly and close issues faster than ever before.' },
-  { name: 'Kaleb Tesfaye', role: 'Citizen Reporter',  text: 'I love being able to track every report live. Finally a platform that makes the city feel accountable.' },
+  { name: 'Sara Tadesse', role: 'Municipal Officer', text: 'The queue system is a game changer. We can prioritize properly and close issues faster than ever before.' },
+  { name: 'Kaleb Tesfaye', role: 'Citizen Reporter', text: 'I love being able to track every report live. Finally a platform that makes the city feel accountable.' },
 ];
 
 /* ── Variants ─────────────────────────────────────────── */
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 const stagger = { show: { transition: { staggerChildren: 0.12 } } };
 
@@ -109,8 +109,8 @@ export default function Landing() {
   const { isAuthenticated, role } = useAuth();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY    = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const heroOp   = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const heroOp = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const featureBento = [
     { col: 7, row: 3 },
     { col: 5, row: 3 },
@@ -165,9 +165,11 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8,
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
                 background: 'rgba(34,211,160,0.1)', border: '1px solid rgba(34,211,160,0.25)',
-                borderRadius: 'var(--radius-full)', padding: '6px 16px', marginBottom: 32 }}
+                borderRadius: 'var(--radius-full)', padding: '6px 16px', marginBottom: 32
+              }}
             >
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22d3a0', display: 'inline-block', animation: 'pulse-glow 2s infinite' }} />
               <span style={{ fontSize: '0.8rem', color: '#22d3a0', fontWeight: 600 }}>Now live in your city</span>
@@ -216,6 +218,7 @@ export default function Landing() {
               <a href="#how-it-works" className="btn btn-ghost btn-lg" style={{ gap: 10 }}>
                 <PlayCircle size={18} /> See How It Works
               </a>
+
             </motion.div>
 
             {/* Category pills */}
@@ -241,7 +244,7 @@ export default function Landing() {
           </div>
         </motion.div>
 
-        
+
       </section>
 
       {/* ═══════════════════════ STATS ═══════════════════════ */}
@@ -495,11 +498,14 @@ export default function Landing() {
             © {new Date().getFullYear()} CleanMyCity. Built to serve communities.
           </p>
           <div style={{ display: 'flex', gap: 24 }}>
-            {['Privacy', 'Terms', 'Contact'].map(l => (
+            {['Privacy', 'Terms'].map(l => (
               <a key={l} href="#" style={{ color: 'var(--txt-muted)', fontSize: '0.8rem', transition: 'color 0.2s' }}
                 onMouseEnter={e => e.target.style.color = 'var(--clr-primary)'}
                 onMouseLeave={e => e.target.style.color = 'var(--txt-muted)'}>{l}</a>
             ))}
+            <a href="https://yeabsira-dejene19.web.app/" style={{ color: 'var(--txt-muted)', fontSize: '0.8rem', transition: 'color 0.2s' }}
+              onMouseEnter={e => e.target.style.color = 'var(--clr-primary)'}
+              onMouseLeave={e => e.target.style.color = 'var(--txt-muted)'}>developer</a>
           </div>
         </div>
       </footer>

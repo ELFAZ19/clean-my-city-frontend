@@ -444,3 +444,15 @@ input, textarea, select {
   .section { padding: 64px 0; }
   .container { padding: 0 16px; }
 }
+
+.dev-link {
+  color: var(--blue);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.dev-link:hover {
+  color: var(--yellow);
+}
