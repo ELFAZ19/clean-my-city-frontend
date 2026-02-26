@@ -33,7 +33,7 @@ const CREDENTIALS = {
   ],
   Citizen: [
     {
-      name: 'John Doe',
+      name: 'citizen1',
       email: 'citizen@example.com',
       password: 'Citizen@123',
       description: 'Citizen account'
