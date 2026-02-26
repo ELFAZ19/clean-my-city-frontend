@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Mail, Lock, Shield, Building2, Copy, Check, ArrowLeft, Key, Info, AlertTriangle } from 'lucide-react';
+import { Mail, Lock, Shield, Building2, Copy, Check, ArrowLeft, Key, Info, AlertTriangle, UserKey } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -29,6 +29,21 @@ const CREDENTIALS = {
       email: 'roads@city.gov',
       password: 'Roads@123456',
       description: 'Manages road maintenance and traffic report.'
+    }
+  ],
+  Citizen: [
+    {
+      name: 'John Doe',
+      email: 'citizen@example.com',
+      password: 'Citizen@123',
+      description: 'Citizen account'
+
+    },
+    {
+      name: 'citezen2',
+      email: 'citizen2@example.com',
+      password: 'Citizen2@123',
+      description: 'Citizen account'
     }
   ]
 };
@@ -65,13 +80,13 @@ function CredentialCard({ title, email, password, description, icon: Icon, color
       }}
     >
       <div style={{ position: 'absolute', top: '-10px', right: '-10px', width: '80px', height: '80px', background: `${color}10`, borderRadius: '50%', filter: 'blur(20px)' }} />
-      
+
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ 
-          width: '44px', 
-          height: '44px', 
-          borderRadius: '12px', 
-          background: `${color}15`, 
+        <div style={{
+          width: '44px',
+          height: '44px',
+          borderRadius: '12px',
+          background: `${color}15`,
           border: `1px solid ${color}30`,
           display: 'flex',
           alignItems: 'center',
@@ -89,12 +104,12 @@ function CredentialCard({ title, email, password, description, icon: Icon, color
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: 'auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--txt-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Email</span>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'between', 
-            background: 'var(--bg-surface-2)', 
-            padding: '8px 12px', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'between',
+            background: 'var(--bg-surface-2)',
+            padding: '8px 12px',
             borderRadius: '8px',
             border: '1px solid var(--bg-glass-border)'
           }}>
@@ -107,12 +122,12 @@ function CredentialCard({ title, email, password, description, icon: Icon, color
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--txt-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Password</span>
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'between', 
-            background: 'var(--bg-surface-2)', 
-            padding: '8px 12px', 
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'between',
+            background: 'var(--bg-surface-2)',
+            padding: '8px 12px',
             borderRadius: '8px',
             border: '1px solid var(--bg-glass-border)'
           }}>
@@ -149,7 +164,7 @@ export default function Credentials() {
             <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: 1.1, letterSpacing: '-0.02em', color: 'var(--txt-primary)', marginBottom: '16px' }}>
               Explore the <span className="text-gradient">Platform</span>
             </h1>
-              <p style={{ fontSize: '1.1rem', color: 'var(--txt-secondary)', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '1.1rem', color: 'var(--txt-secondary)', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
               Use these pre-configured credentials to login and see how each role interacts with the system. Citizen accounts can be created at any time through the registration page.
             </p>
 
@@ -183,7 +198,7 @@ export default function Credentials() {
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--txt-primary)', fontFamily: 'var(--font-display)' }}>System Administrator</h2>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-                <CredentialCard 
+                <CredentialCard
                   title={CREDENTIALS.admin.role}
                   email={CREDENTIALS.admin.email}
                   password={CREDENTIALS.admin.password}
@@ -202,7 +217,7 @@ export default function Credentials() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
                 {CREDENTIALS.authorities.map((auth, idx) => (
-                  <CredentialCard 
+                  <CredentialCard
                     key={idx}
                     title={auth.name}
                     email={auth.email}
@@ -214,18 +229,41 @@ export default function Credentials() {
                 ))}
               </div>
             </div>
+
+            {/* Citizen Section */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                <UserKey size={20} style={{ color: 'var(--clr-accent)' }} />
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--txt-primary)', fontFamily: 'var(--font-display)' }}>Citizen Credinitial</h2>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+                {CREDENTIALS.Citizen.map((citizen, idx) => (
+                  <CredentialCard
+                    key={idx}
+                    title={citizen.name}
+                    email={citizen.email}
+                    password={citizen.password}
+                    description={citizen.description}
+                    icon={UserKey}
+                    color="#6366f1"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
+
+
           {/* Info Banner */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            style={{ 
-              marginTop: '64px', 
-              padding: '24px', 
-              borderRadius: '20px', 
-              background: 'rgba(99,102,241,0.05)', 
+            style={{
+              marginTop: '64px',
+              padding: '24px',
+              borderRadius: '20px',
+              background: 'rgba(99,102,241,0.05)',
               border: '1px solid rgba(99,102,241,0.15)',
               display: 'flex',
               gap: '16px',

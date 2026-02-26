@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { RefreshCw, CheckCircle, Clock, AlertTriangle, Building2, Download, ChevronDown, BarChart2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { RefreshCw, CheckCircle, Clock, AlertTriangle, Building2, Download, ChevronDown, BarChart2, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../../api/axiosInstance';
@@ -12,10 +12,9 @@ export default function OrgDashboard() {
   const [issues, setIssues] = useState([]);
   const [orgId, setOrgId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(null);
-  const [filter, setFilter] = useState('ALL');
-  const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(null);
+  const [issueToDelete, setIssueToDelete] = useState(null);
   const exportRef = useRef(null);
 
   const fetchQueue = async () => {
@@ -60,6 +59,17 @@ export default function OrgDashboard() {
       setIssues(prev => prev.map(i => i.id === id ? { ...i, status } : i));
     } catch { /* silent */ }
     finally { setUpdating(null); }
+  };
+
+  const handleDeleteIssue = async () => {
+    if (!issueToDelete) return;
+    setDeleting(issueToDelete.id);
+    try {
+      await api.delete(`/issues/${issueToDelete.id}`);
+      setIssues(prev => prev.filter(i => i.id !== issueToDelete.id));
+      setIssueToDelete(null);
+    } catch { /* silent */ }
+    finally { setDeleting(null); }
   };
 
   const FILTER_OPTIONS = ['ALL', 'PENDING', 'IN_PROGRESS', 'RESOLVED'];
@@ -189,12 +199,46 @@ export default function OrgDashboard() {
                         <CheckCircle size={12} /> Resolved
                       </span>
                     )}
+                    <button onClick={() => setIssueToDelete(issue)}
+                      disabled={deleting === issue.id}
+                      className="btn btn-ghost btn-sm"
+                      style={{ borderColor: 'rgba(239,68,68,0.3)', color: 'var(--clr-danger)', padding: '6px 8px' }}>
+                      <Trash2 size={14} />
+                    </button>
                   </>
                 } />
               </motion.div>
             ))}
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {issueToDelete && (
+            <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIssueToDelete(null)}
+                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} />
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                style={{ position: 'relative', background: 'var(--bg-surface)', border: '1px solid var(--bg-glass-border)', borderRadius: 20, padding: 32, maxWidth: 400, width: '100%', textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', color: 'var(--clr-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                  <Trash2 size={32} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--txt-primary)', marginBottom: 12 }}>Delete Issue?</h3>
+                <p style={{ color: 'var(--txt-secondary)', fontSize: '0.9rem', marginBottom: 24, lineHeight: 1.6 }}>
+                  Are you sure you want to delete "<strong>{issueToDelete.title}</strong>"? This action cannot be undone.
+                </p>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={() => setIssueToDelete(null)} disabled={deleting}
+                    className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+                  <button onClick={handleDeleteIssue} disabled={deleting}
+                    style={{ flex: 1, background: 'var(--clr-danger)', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', opacity: deleting ? 0.7 : 1 }}>
+                    {deleting ? 'Deleting…' : 'Delete'}
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

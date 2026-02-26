@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, UserCheck, UserX, RefreshCw, Search, Shield, Building2 } from 'lucide-react';
+import { Users, UserCheck, UserX, RefreshCw, Search, Shield, Building2, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axiosInstance';
 import Navbar from '../../components/Navbar';
 
 const ROLE_COLORS = {
-  CITIZEN:   { bg: 'rgba(34,211,160,0.12)',  border: 'rgba(34,211,160,0.25)',  color: '#22d3a0' },
-  AUTHORITY: { bg: 'rgba(99,102,241,0.12)',  border: 'rgba(99,102,241,0.25)',  color: '#818cf8' },
-  ADMIN:     { bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.25)',  color: '#f59e0b' },
+  CITIZEN: { bg: 'rgba(34,211,160,0.12)', border: 'rgba(34,211,160,0.25)', color: '#22d3a0' },
+  AUTHORITY: { bg: 'rgba(99,102,241,0.12)', border: 'rgba(99,102,241,0.25)', color: '#818cf8' },
+  ADMIN: { bg: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.25)', color: '#f59e0b' },
 };
 
 export default function AdminUsers() {
   const { user } = useAuth();
-  const [users, setUsers]     = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch]   = useState('');
+  const [search, setSearch] = useState('');
   const [toggling, setToggling] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -39,6 +41,17 @@ export default function AdminUsers() {
     finally { setToggling(null); }
   };
 
+  const handleDeleteUser = async () => {
+    if (!userToDelete) return;
+    setDeleting(userToDelete.id);
+    try {
+      await api.delete(`/users/${userToDelete.id}`);
+      setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+      setUserToDelete(null);
+    } catch { /* silent */ }
+    finally { setDeleting(null); }
+  };
+
   const filtered = users.filter(u =>
     !search ||
     u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -46,10 +59,10 @@ export default function AdminUsers() {
   );
 
   const stats = {
-    total:     users.length,
-    citizens:  users.filter(u => u.role === 'CITIZEN').length,
+    total: users.length,
+    citizens: users.filter(u => u.role === 'CITIZEN').length,
     authority: users.filter(u => u.role === 'AUTHORITY').length,
-    active:    users.filter(u => u.is_active).length,
+    active: users.filter(u => u.is_active).length,
   };
 
   return (
@@ -73,10 +86,10 @@ export default function AdminUsers() {
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 14, marginBottom: 28 }}>
           {[
-            { label: 'Total Users', value: stats.total,     icon: Users,     color: '#22d3a0' },
-            { label: 'Citizens',    value: stats.citizens,  icon: UserCheck, color: '#10b981' },
+            { label: 'Total Users', value: stats.total, icon: Users, color: '#22d3a0' },
+            { label: 'Citizens', value: stats.citizens, icon: UserCheck, color: '#10b981' },
             { label: 'Authorities', value: stats.authority, icon: Building2, color: '#818cf8' },
-            { label: 'Active',      value: stats.active,    icon: Shield,    color: '#f59e0b' },
+            { label: 'Active', value: stats.active, icon: Shield, color: '#f59e0b' },
           ].map(s => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               style={{ background: 'var(--grad-card)', border: '1px solid var(--bg-glass-border)', borderRadius: 'var(--radius-lg)', padding: 18, display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -136,23 +149,37 @@ export default function AdminUsers() {
                     <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.7rem', fontWeight: 700, background: rc.bg, border: `1px solid ${rc.border}`, color: rc.color, letterSpacing: '0.04em' }}>
                       {u.role}
                     </span>
-                    <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.7rem', fontWeight: 600,
+                    <span style={{
+                      padding: '3px 10px', borderRadius: 'var(--radius-full)', fontSize: '0.7rem', fontWeight: 600,
                       background: u.is_active ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
                       border: `1px solid ${u.is_active ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'}`,
-                      color: u.is_active ? '#10b981' : 'var(--clr-danger)' }}>
+                      color: u.is_active ? '#10b981' : 'var(--clr-danger)'
+                    }}>
                       {u.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    {/* Don't let admin deactivate themselves */}
+                    {/* Don't let admin deactivate or delete themselves */}
                     {u.id !== user?.id && (
-                      <button
-                        onClick={() => toggleActive(u)}
-                        disabled={toggling === u.id}
-                        style={{ padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 600, border: '1px solid', cursor: 'pointer', background: 'transparent', transition: 'all 0.2s',
-                          borderColor: u.is_active ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)',
-                          color: u.is_active ? 'var(--clr-danger)' : '#10b981',
-                          opacity: toggling === u.id ? 0.5 : 1 }}>
-                        {toggling === u.id ? '…' : u.is_active ? 'Deactivate' : 'Activate'}
-                      </button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => toggleActive(u)}
+                          disabled={toggling === u.id}
+                          style={{
+                            padding: '6px 12px', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 600, border: '1px solid', cursor: 'pointer', background: 'transparent', transition: 'all 0.2s',
+                            borderColor: u.is_active ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)',
+                            color: u.is_active ? 'var(--clr-danger)' : '#10b981',
+                            opacity: toggling === u.id ? 0.5 : 1
+                          }}>
+                          {toggling === u.id ? '…' : u.is_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button
+                          onClick={() => setUserToDelete(u)}
+                          disabled={deleting === u.id}
+                          style={{ width: 32, height: 32, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.1)', color: 'var(--clr-danger)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.1)'}>
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 </motion.div>
@@ -160,6 +187,34 @@ export default function AdminUsers() {
             })}
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {userToDelete && (
+            <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setUserToDelete(null)}
+                style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }} />
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                style={{ position: 'relative', background: 'var(--bg-surface)', border: '1px solid var(--bg-glass-border)', borderRadius: 20, padding: 32, maxWidth: 400, width: '100%', textAlign: 'center' }}>
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', color: 'var(--clr-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                  <Trash2 size={32} />
+                </div>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--txt-primary)', marginBottom: 12 }}>Delete User?</h3>
+                <p style={{ color: 'var(--txt-secondary)', fontSize: '0.9rem', marginBottom: 24, lineHeight: 1.6 }}>
+                  Are you sure you want to delete <strong>{userToDelete.full_name}</strong>? This will permanently remove their account.
+                </p>
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <button onClick={() => setUserToDelete(null)} disabled={deleting}
+                    className="btn btn-ghost" style={{ flex: 1 }}>Cancel</button>
+                  <button onClick={handleDeleteUser} disabled={deleting}
+                    style={{ flex: 1, background: 'var(--clr-danger)', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: '0.9rem', cursor: 'pointer', opacity: deleting ? 0.7 : 1 }}>
+                    {deleting ? 'Deleting…' : 'Delete User'}
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
