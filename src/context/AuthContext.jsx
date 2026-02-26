@@ -13,26 +13,7 @@ export function AuthProvider({ children }) {
   });
 
   const [token, setToken] = useState(() => localStorage.getItem('cmc_token') || null);
-  const [loading, setLoading] = useState(true);
-
-  /* =====================================================
-     INITIAL CSRF COOKIE INIT
-  ===================================================== */
-  useEffect(() => {
-    const init = async () => {
-      try {
-        // This initializes the XSRF-TOKEN cookie; Axios will
-        // read it automatically and send it in X-CSRF-Token.
-        await api.get('/csrf-token');
-      } catch (err) {
-        console.error('Failed to initialize CSRF protection', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    init();
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   /* =====================================================
      AUTO LOGOUT ON 401
