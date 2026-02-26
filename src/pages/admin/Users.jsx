@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, UserCheck, UserX, RefreshCw, Search, Shield, Building2, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Users, UserCheck, UserX, RefreshCw, Search, Shield, Building2, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axiosInstance';
 import Navbar from '../../components/Navbar';
@@ -71,14 +72,21 @@ export default function AdminUsers() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 24px 60px' }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
-          <div>
-            <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.4rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--txt-primary)' }}>
-              User Management
-            </motion.h1>
-            <p style={{ color: 'var(--txt-secondary)', marginTop: 6 }}>
-              Admin: <strong style={{ color: 'var(--clr-primary)' }}>{user?.full_name}</strong>
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <Link to="/dashboard/admin" style={{ color: 'var(--txt-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)', transition: 'all 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--clr-primary)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--txt-secondary)'}>
+              <ArrowLeft size={20} />
+            </Link>
+            <div>
+              <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1.2rem, 4vw, 1.8rem)', fontWeight: 800, color: 'var(--txt-primary)' }}>
+                User Management
+              </motion.h1>
+              <p style={{ color: 'var(--txt-secondary)', marginTop: 4, fontSize: '0.85rem' }}>
+                Admin: <strong style={{ color: 'var(--clr-primary)' }}>{user?.full_name}</strong>
+              </p>
+            </div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={fetchUsers}><RefreshCw size={15} /></button>
         </div>
