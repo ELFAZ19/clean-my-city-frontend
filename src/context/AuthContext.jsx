@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
-import api, { fetchCsrfToken } from '../api/axiosInstance';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import api from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
@@ -14,18 +14,18 @@ export function AuthProvider({ children }) {
 
   const [token, setToken] = useState(() => localStorage.getItem('cmc_token') || null);
   const [loading, setLoading] = useState(true);
-  const csrfReady = useRef(false);
 
   /* =====================================================
-     INITIAL CSRF LOAD (VERY IMPORTANT)
+     INITIAL CSRF COOKIE INIT
   ===================================================== */
   useEffect(() => {
     const init = async () => {
       try {
-        await fetchCsrfToken();
-        csrfReady.current = true;
+        // This initializes the XSRF-TOKEN cookie; Axios will
+        // read it automatically and send it in X-CSRF-Token.
+        await api.get('/csrf-token');
       } catch (err) {
-        console.error('Failed to initialize CSRF token', err);
+        console.error('Failed to initialize CSRF protection', err);
       } finally {
         setLoading(false);
       }
@@ -47,11 +47,6 @@ export function AuthProvider({ children }) {
 
     setToken(null);
     setUser(null);
-
-    // Get fresh CSRF token after session reset
-    try {
-      await fetchCsrfToken();
-    } catch (_) { }
   }, []);
 
   useEffect(() => {
@@ -67,11 +62,6 @@ export function AuthProvider({ children }) {
     setLoading(true);
 
     try {
-      if (!csrfReady.current) {
-        await fetchCsrfToken();
-        csrfReady.current = true;
-      }
-
       const { data } = await api.post('/auth/login', { email, password });
 
       const { token: t, user: u } = data.data;
@@ -81,9 +71,6 @@ export function AuthProvider({ children }) {
 
       setToken(t);
       setUser(u);
-
-      // Refresh CSRF after session changes
-      await fetchCsrfToken();
 
       return { success: true, user: u };
 
@@ -102,11 +89,6 @@ export function AuthProvider({ children }) {
     setLoading(true);
 
     try {
-      if (!csrfReady.current) {
-        await fetchCsrfToken();
-        csrfReady.current = true;
-      }
-
       const { data } = await api.post('/auth/register', payload);
 
       return { success: true, data: data.data };
