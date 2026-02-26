@@ -12,6 +12,9 @@ export default function OrgDashboard() {
   const [issues, setIssues] = useState([]);
   const [orgId, setOrgId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(null);
+  const [filter, setFilter] = useState('ALL');
+  const [exportOpen, setExportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(null);
   const [issueToDelete, setIssueToDelete] = useState(null);
