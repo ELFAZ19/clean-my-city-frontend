@@ -76,8 +76,8 @@ function MapViewerModal({ lat, lng, onClose }) {
       delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl:       'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl:     'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
       });
 
       const map = L.map(mapContainer.current, { attributionControl: false }).setView([lat, lng], 16);
@@ -127,7 +127,7 @@ function timeAgo(dateStr) {
   if (!dateStr) return '';
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1)  return 'just now';
+  if (m < 1) return 'just now';
   if (m < 60) return `${m}m ago`;
   const h = Math.floor(m / 60);
   if (h < 24) return `${h}h ago`;
@@ -136,20 +136,21 @@ function timeAgo(dateStr) {
 }
 
 const STATUS_LEFT_BORDER = {
-  PENDING:     '#f59e0b',
+  PENDING: '#f59e0b',
   IN_PROGRESS: '#6366f1',
-  RESOLVED:    '#10b981',
+  RESOLVED: '#10b981',
 };
 
 export default function IssueCard({ issue, actions, onClick }) {
-  const { role } = useAuth();
+  const { role, token } = useAuth();
   const [viewImage, setViewImage] = useState(false);
-  const [viewMap, setViewMap]     = useState(false);
+  const [viewMap, setViewMap] = useState(false);
   const hasImage = !!issue.has_image;
   const isAdminOrOrg = role === 'ADMIN' || role === 'AUTHORITY';
   const borderColor = STATUS_LEFT_BORDER[issue.status] || 'var(--bg-glass-border)';
 
-  const imgUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/issues/${issue.id}/image`;
+  const imgBase = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/issues/${issue.id}/image`;
+  const imgUrl = token ? `${imgBase}?token=${token}` : imgBase;
 
   return (
     <>
@@ -198,8 +199,10 @@ export default function IssueCard({ issue, actions, onClick }) {
             </div>
 
             {/* Description */}
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--txt-secondary)', marginBottom: 14, lineHeight: 1.6,
-              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+            <p style={{
+              fontSize: 'var(--text-sm)', color: 'var(--txt-secondary)', marginBottom: 14, lineHeight: 1.6,
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden'
+            }}>
               {issue.description}
             </p>
 
@@ -215,7 +218,7 @@ export default function IssueCard({ issue, actions, onClick }) {
                   <User size={11} /> {issue.citizen_name}
                 </span>
               ) : issue.reporter_name ? (
-                 <span title="Reporter Name" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.72rem', color: 'var(--txt-muted)', background: 'var(--bg-glass)', borderRadius: 6, padding: '3px 9px' }}>
+                <span title="Reporter Name" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.72rem', color: 'var(--txt-muted)', background: 'var(--bg-glass)', borderRadius: 6, padding: '3px 9px' }}>
                   <User size={11} /> {issue.reporter_name}
                 </span>
               ) : null}
