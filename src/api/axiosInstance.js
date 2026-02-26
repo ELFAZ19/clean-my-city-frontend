@@ -1,38 +1,69 @@
 import axios from 'axios';
 
+/* =====================================================
+   AXIOS INSTANCE
+===================================================== */
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
-  withCredentials: true,        // send session cookies automatically
+  withCredentials: true, // REQUIRED for cross-origin cookies
   timeout: 15000,
 });
 
-// ============================================
-// CSRF Token Management
-// ============================================
+/* =====================================================
+   CSRF TOKEN STATE
+===================================================== */
+
 let csrfToken = null;
+let csrfPromise = null;
 
 /**
  * Fetch CSRF token from backend.
- * Called once on app init and cached for subsequent requests.
+ * Uses a single in-flight promise to prevent race conditions.
  */
 export const fetchCsrfToken = async () => {
-  try {
-    const { data } = await api.get('/csrf-token');
-    csrfToken = data.csrfToken;
-  } catch (err) {
-    console.warn('Could not fetch CSRF token:', err.message);
-  }
+  if (csrfPromise) return csrfPromise;
+
+  csrfPromise = api
+    .get('/csrf-token')
+    .then((res) => {
+      csrfToken = res.data.csrfToken;
+      return csrfToken;
+    })
+    .catch((err) => {
+      console.warn('CSRF token fetch failed:', err?.message);
+      csrfToken = null;
+      throw err;
+    })
+    .finally(() => {
+      csrfPromise = null;
+    });
+
+  return csrfPromise;
 };
 
-// Attach CSRF token to every mutating request (POST, PUT, DELETE, PATCH)
+/* =====================================================
+   REQUEST INTERCEPTOR
+===================================================== */
+
 api.interceptors.request.use(
-  (config) => {
+  async (config) => {
     const mutatingMethods = ['post', 'put', 'delete', 'patch'];
-    if (csrfToken && mutatingMethods.includes(config.method)) {
-      config.headers['X-CSRF-Token'] = csrfToken;
+
+    // Ensure CSRF token exists before mutating requests
+    if (mutatingMethods.includes(config.method)) {
+      if (!csrfToken) {
+        try {
+          await fetchCsrfToken();
+        } catch (_) {}
+      }
+
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
     }
 
-    // Also attach JWT from localStorage as fallback for backward compatibility
+    // Attach JWT if exists (hybrid auth support)
     const token = localStorage.getItem('cmc_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -40,24 +71,34 @@ api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
-// Global 401 handler
+/* =====================================================
+   RESPONSE INTERCEPTOR
+===================================================== */
+
 api.interceptors.response.use(
-  (res) => res,
-  (error) => {
-    if (error.response?.status === 401) {
+  (response) => response,
+  async (error) => {
+    const status = error.response?.status;
+
+    // 🔐 Handle Unauthorized
+    if (status === 401) {
       localStorage.removeItem('cmc_token');
       localStorage.removeItem('cmc_user');
       window.dispatchEvent(new Event('cmc:unauthenticated'));
     }
-    // If CSRF token is invalid, refetch it
-    if (error.response?.status === 403 && error.response?.data?.message?.includes('CSRF')) {
-      fetchCsrfToken();
+
+    // 🛡 Handle CSRF failure (EBADCSRFTOKEN from backend)
+    if (status === 403) {
+      try {
+        await fetchCsrfToken();
+      } catch (_) {}
     }
+
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

@@ -1,40 +1,92 @@
-import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import api, { fetchCsrfToken } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('cmc_user')); }
-    catch { return null; }
+    try {
+      return JSON.parse(localStorage.getItem('cmc_user'));
+    } catch {
+      return null;
+    }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('cmc_token') || null);
-  const [loading, setLoading] = useState(false);
 
-  // Initialize CSRF token on mount
+  const [token, setToken] = useState(() => localStorage.getItem('cmc_token') || null);
+  const [loading, setLoading] = useState(true);
+  const csrfReady = useRef(false);
+
+  /* =====================================================
+     INITIAL CSRF LOAD (VERY IMPORTANT)
+  ===================================================== */
   useEffect(() => {
-    fetchCsrfToken();
+    const init = async () => {
+      try {
+        await fetchCsrfToken();
+        csrfReady.current = true;
+      } catch (err) {
+        console.error('Failed to initialize CSRF token', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    init();
   }, []);
 
-  // Listen for 401 events from axiosInstance
+  /* =====================================================
+     AUTO LOGOUT ON 401
+  ===================================================== */
+  const logout = useCallback(async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (_) { }
+
+    localStorage.removeItem('cmc_token');
+    localStorage.removeItem('cmc_user');
+
+    setToken(null);
+    setUser(null);
+
+    // Get fresh CSRF token after session reset
+    try {
+      await fetchCsrfToken();
+    } catch (_) { }
+  }, []);
+
   useEffect(() => {
     const handler = () => logout();
     window.addEventListener('cmc:unauthenticated', handler);
     return () => window.removeEventListener('cmc:unauthenticated', handler);
-  }, []);
+  }, [logout]);
 
+  /* =====================================================
+     LOGIN
+  ===================================================== */
   const login = useCallback(async (email, password) => {
     setLoading(true);
+
     try {
+      if (!csrfReady.current) {
+        await fetchCsrfToken();
+        csrfReady.current = true;
+      }
+
       const { data } = await api.post('/auth/login', { email, password });
+
       const { token: t, user: u } = data.data;
+
       localStorage.setItem('cmc_token', t);
       localStorage.setItem('cmc_user', JSON.stringify(u));
+
       setToken(t);
       setUser(u);
-      // Re-fetch CSRF token after login (session changed)
+
+      // Refresh CSRF after session changes
       await fetchCsrfToken();
+
       return { success: true, user: u };
+
     } catch (err) {
       const msg = err.response?.data?.message || 'Login failed';
       return { success: false, message: msg };
@@ -43,11 +95,22 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  /* =====================================================
+     REGISTER
+  ===================================================== */
   const register = useCallback(async (payload) => {
     setLoading(true);
+
     try {
+      if (!csrfReady.current) {
+        await fetchCsrfToken();
+        csrfReady.current = true;
+      }
+
       const { data } = await api.post('/auth/register', payload);
+
       return { success: true, data: data.data };
+
     } catch (err) {
       const msg = err.response?.data?.message || 'Registration failed';
       return { success: false, message: msg };
@@ -56,19 +119,22 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const logout = useCallback(async () => {
-    try { await api.post('/auth/logout'); } catch { }
-    localStorage.removeItem('cmc_token');
-    localStorage.removeItem('cmc_user');
-    setToken(null);
-    setUser(null);
-  }, []);
-
   const isAuthenticated = !!token && !!user;
-  const role = user?.role || null; // 'CITIZEN' | 'ORGANIZATION' | 'ADMIN'
+  const role = user?.role || null;
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, isAuthenticated, role, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isAuthenticated,
+        role,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
