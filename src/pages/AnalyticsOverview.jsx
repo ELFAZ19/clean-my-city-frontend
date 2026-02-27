@@ -379,8 +379,8 @@ export default function AnalyticsOverview() {
                         Download as
                       </div>
                       {[
-                        { fmt: 'xlsx', label: 'Excel (.xlsx)', icon: '📊' },
-                        { fmt: 'csv', label: 'CSV (.csv)', icon: '📄' },
+                        { fmt: 'xlsx', label: 'Excel (.xlsx)', icon: '' },
+                        { fmt: 'csv', label: 'CSV (.csv)', icon: '' },
                       ].map(({ fmt, label, icon }) => (
                         <button
                           key={fmt}

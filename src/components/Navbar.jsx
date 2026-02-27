@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, ChevronDown, LogOut, User, LayoutDashboard, Sun, Moon, Menu, X as CloseIcon, BarChart2 } from 'lucide-react';
@@ -53,18 +54,18 @@ export default function Navbar() {
         zIndex: 1000,
         padding: '0 24px',
         transition: 'background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s',
-        background: scrolled || !isLanding
+        background: scrolled || !isLanding || mobileMenuOpen
           ? 'var(--nav-bg)'
           : 'transparent',
-        backdropFilter: scrolled || !isLanding ? 'blur(24px)' : 'none',
-        borderBottom: scrolled || !isLanding
+        backdropFilter: scrolled || !isLanding || mobileMenuOpen ? 'blur(24px)' : 'none',
+        borderBottom: scrolled || !isLanding || mobileMenuOpen
           ? '1px solid var(--bg-glass-border)'
           : '1px solid transparent',
       }}
     >
       <div style={{ maxWidth: 1200, margin: '0 auto', height: 70, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center'}}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <div style={{
             width: 46, height: 46, borderRadius: 10,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -270,65 +271,85 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            style={{
-              position: 'fixed', top: 0, right: 0, bottom: 0,
-              width: 'min(300px, 80vw)',
-              background: 'var(--bg-surface)',
-              backdropFilter: 'blur(34px)',
-              borderLeft: '1px solid var(--bg-glass-border)',
-              padding: '80px 24px 40px',
-              display: 'flex', flexDirection: 'column', gap: 10,
-              zIndex: 1050,
-              boxShadow: '-10px 0 40px rgba(0,0,0,0.2)'
-            }}
-          >
-            {isLanding && (
-              <>
-                <div style={{ textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 700, color: 'var(--txt-muted)', letterSpacing: '0.05em', marginBottom: 8, marginTop: 10 }}>Navigation</div>
-                <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>Features</a>
-                <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>How it Works</a>
-                <a href="#stats" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>Impact</a>
-                <Link to="/credentials" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(34,211,160,0.08)', border: '1px solid rgba(34,211,160,0.2)' }}>Platform Credentials</Link>
-                <Link to="https://yeabsira-dejene19.web.app/" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(55, 34, 211, 0.08)', border: '1px solid rgba(34, 125, 211, 0.2)' }}>Developer</Link>
+      {/* Mobile Menu Overlay - Rendered in Portal */}
+      {createPortal(
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <>
+              {/* Backdrop Overlay */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{
+                  position: 'fixed', inset: 0,
+                  background: 'rgba(0,0,0,0.6)',
+                  backdropFilter: 'blur(4px)',
+                  zIndex: 2000
+                }}
+              />
 
-              </>
-            )}
-
-            <div style={{ textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 700, color: 'var(--txt-muted)', letterSpacing: '0.05em', marginBottom: 8, marginTop: 20 }}>Account</div>
-            {!isAuthenticated ? (
-              <>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--bg-glass-border)' }}>Sign In</Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary" style={{ justifyContent: 'center' }}>Get Started</Link>
-              </>
-            ) : (
-              <>
-                <Link to={dashboardPath} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>
-                  <LayoutDashboard size={18} /> Dashboard
-                </Link>
-                {(user?.role === 'ADMIN' || user?.role === 'AUTHORITY') && (
-                  <Link to="/analytics" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-glass)', border: '1px solid var(--bg-glass-border)' }}>
-                    <BarChart2 size={18} /> Analytics
-                  </Link>
+              {/* Side Menu */}
+              <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                style={{
+                  position: 'fixed', top: 0, right: 0, bottom: 0,
+                  width: 'min(300px, 80vw)',
+                  background: 'var(--bg-surface)',
+                  borderLeft: '1px solid var(--bg-glass-border)',
+                  padding: '80px 24px 40px',
+                  display: 'flex', flexDirection: 'column', gap: 10,
+                  zIndex: 2010,
+                  boxShadow: '-10px 0 40px rgba(0,0,0,0.4)',
+                  opacity: 1
+                }}
+              >
+                {isLanding && (
+                  <>
+                    <div style={{ textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 700, color: 'var(--txt-muted)', letterSpacing: '0.05em', marginBottom: 8, marginTop: 10 }}>Navigation</div>
+                    <a href="#features" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-surface-2)', border: '1px solid var(--bg-glass-border)' }}>Features</a>
+                    <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-surface-2)', border: '1px solid var(--bg-glass-border)' }}>How it Works</a>
+                    <a href="#stats" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', fontSize: '0.95rem', fontWeight: 500, background: 'var(--bg-surface-2)', border: '1px solid var(--bg-glass-border)' }}>Impact</a>
+                    <Link to="/credentials" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(34,211,160,0.08)', border: '1px solid rgba(34,211,160,0.2)' }}>Platform Credentials</Link>
+                    <Link to="https://yeabsira-dejene19.web.app/" onClick={() => setMobileMenuOpen(false)} style={{ padding: '12px 16px', borderRadius: 12, color: 'var(--clr-primary)', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(55, 34, 211, 0.08)', border: '1px solid rgba(34, 125, 211, 0.2)' }}>Developer</Link>
+                  </>
                 )}
-                <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--clr-danger)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.1)', cursor: 'pointer' }}>
-                  <LogOut size={18} /> Sign Out
-                </button>
-              </>
-            )}
 
-            <div style={{ marginTop: 'auto', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.75rem', color: 'var(--txt-muted)' }}>© 2024 CleanMyCity</div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <div style={{ textTransform: 'uppercase', fontSize: '0.7rem', fontWeight: 700, color: 'var(--txt-muted)', letterSpacing: '0.05em', marginBottom: 8, marginTop: 20 }}>Account</div>
+                {!isAuthenticated ? (
+                  <>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-ghost" style={{ justifyContent: 'flex-start', border: '1px solid var(--bg-glass-border)' }}>Sign In</Link>
+                    <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary" style={{ justifyContent: 'center' }}>Get Started</Link>
+                  </>
+                ) : (
+                  <>
+                    <Link to={dashboardPath} onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-surface-2)', border: '1px solid var(--bg-glass-border)' }}>
+                      <LayoutDashboard size={18} /> Dashboard
+                    </Link>
+                    {(user?.role === 'ADMIN' || user?.role === 'AUTHORITY') && (
+                      <Link to="/analytics" onClick={() => setMobileMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--txt-secondary)', background: 'var(--bg-surface-2)', border: '1px solid var(--bg-glass-border)' }}>
+                        <BarChart2 size={18} /> Analytics
+                      </Link>
+                    )}
+                    <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 12, color: 'var(--clr-danger)', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.1)', cursor: 'pointer' }}>
+                      <LogOut size={18} /> Sign Out
+                    </button>
+                  </>
+                )}
+
+                <div style={{ marginTop: 'auto', textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--txt-muted)' }}>© 2024 CleanMyCity</div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.nav>
   );
 }
